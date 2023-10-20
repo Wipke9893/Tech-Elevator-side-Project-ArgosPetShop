@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class ArgosPetShop implements PaymentProcessor {
+public class ArgosPetShop  {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         Inventory inventory = new Inventory();
@@ -23,17 +23,6 @@ public class ArgosPetShop implements PaymentProcessor {
         } while (true);
 
         input.close();
-    }
-
-    @Override
-    public boolean processPayment(double amountToPay, double amountPaid) {
-        if (amountPaid < amountToPay) {
-            System.out.println("Insufficient amount. Please enter a valid amount.");
-            return false;
-        }
-        double change = amountPaid - amountToPay;
-        System.out.println("Thank you for your order today! Your change is: $" + change);
-        return true;
     }
 }
  // put sounds to it??

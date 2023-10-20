@@ -1,16 +1,7 @@
 import java.util.Scanner;
 
-public class Delivery implements Purchasable {
+public class Delivery {
 
-    @Override
-    public double getPrice() {
-        return 25.0;
-    }
-
-    @Override
-    public String getName() {
-        return "delivery";
-    }
     public boolean processDelivery(double cart) {
         double deliveryCost = 25.0;
         Scanner input = new Scanner(System.in);
@@ -41,10 +32,6 @@ public class Delivery implements Purchasable {
             System.out.println("You have opted for in-store pickup.");
             return false;
         }
-    }
-
-    public static double getDeliveryCost() {
-        return 25.0;
     }
 }
 

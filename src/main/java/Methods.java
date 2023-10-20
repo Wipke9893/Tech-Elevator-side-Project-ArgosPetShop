@@ -8,17 +8,12 @@ public class Methods {
         System.out.println("We have: beds, toys, foods, treats, CBD, supplements, waste bags, shampoos, conditioners, brushes");
         System.out.println("harnesses, collars, leashes, bowls, crates, sweaters, winter coats, and flea and tick prevention");
         String category = input.nextLine().toLowerCase();
-
+        Map<String, Double> productsByCategory = inventory.getProductsByCategory(category);
         if (category.endsWith("es")) {
             category = category.substring(0, category.length() - 2);
         } else if (category.endsWith("s")) {
             category = category.substring(0, category.length() - 1);
         }
-
-
-        Map<String, Double> productsByCategory = inventory.getProductsByCategory(category);
-
-
         if (!productsByCategory.isEmpty()) {
             System.out.println("Here are the products we have in the " + category + " category:");
             for (Map.Entry<String, Double> entry : productsByCategory.entrySet()) {
@@ -31,24 +26,32 @@ public class Methods {
             Double cost = inventory.getProductPrice(order);
 
             if (cost != null) {
+
+                System.out.println("You've chosen " + order + ". Available sizes are:");
+
+                String[] availableSizes = {"Small", "Medium", "Large"};
+
+                for (int i = 0; i < availableSizes.length; i++) {
+                    System.out.println((i + 1) + ". " + availableSizes[i]);
+                }
+
+                System.out.print("Please select a size: ");
+                int sizeChoice = input.nextInt();
+                String chosenSize = availableSizes[sizeChoice - 1];
+
                 System.out.print("How many would you like to order? ");
                 int quantity = input.nextInt();
                 input.nextLine();
 
-                cart += cost * quantity;
+                cart += cost * quantity;  // This line would be modified to include the cost based on size
                 System.out.println("Tendered Amount: $" + (cost * quantity));
             } else {
                 System.out.println("We're sorry, but that item is currently out of stock.");
-                System.out.println("Please try again.");
             }
-        } else {
-            System.out.println("We don't have products in that category. Please try again.");
-        }
 
+        }
         return cart;
     }
-
-
     public static boolean askForMoreItems(Scanner input) {
         System.out.print("Would you like to order anything else? (yes/no): ");
         String response = input.nextLine();
@@ -58,7 +61,6 @@ public class Methods {
         }
         return false;
     }
-
     public static boolean processPayment(Scanner input, double cart) {
         while (true) {
             System.out.println("Your total cost is: $" + cart);

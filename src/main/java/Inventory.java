@@ -1,43 +1,45 @@
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
+import org.apache.commons.dbcp2.BasicDataSource;
 
-public class Inventory implements Purchasable {
+public class Inventory {
     private Map<String, Double> inventoryList;
 
-    @Override
-    public double getPrice() {
-        return 0;
-    }
-
-    @Override
-    public String getName() {
-        return "inventory";
-    }
     public Inventory() {
         inventoryList = new HashMap<>();
 
-        // Reading from a file
         try {
-            File file = new File("inventory.txt");
-            Scanner scanner = new Scanner(file);
+            BasicDataSource dataSource = new BasicDataSource();
+            dataSource.setUrl("jdbc:postgresql://localhost:5432/Argos");
+            dataSource.setUsername("postgres");
+            dataSource.setPassword("postgres1");
 
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                String[] parts = line.split(", ");
-                if (parts.length >= 2) { // Making sure "both a name and a price" are present in the txt file.
-                    String name = parts[0];
-                    Double price = Double.parseDouble(parts[1]);
-                    inventoryList.put(name, price);
-                }
+            Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery(
+                    "SELECT name, price FROM ProductInfo INNER JOIN ProductVariants ON ProductInfo.product_id = ProductVariants.product_id;"
+            );
+
+            while (resultSet.next()) {
+                String name = resultSet.getString("name");
+                Double price = resultSet.getDouble("price");
+                inventoryList.put(name, price);
             }
-            scanner.close();
-        } catch (FileNotFoundException e) {
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+            dataSource.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     public Double getProductPrice(String productName) {
         return inventoryList.get(productName);
     }
