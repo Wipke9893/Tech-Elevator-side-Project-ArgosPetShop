@@ -1,59 +1,64 @@
+import org.apache.commons.dbcp2.BasicDataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.dbcp2.BasicDataSource;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Inventory {
-    private Map<String, Double> inventoryList;
+    private List<Bed> beds;
+    private List<Food> foods;
 
     public Inventory() {
-        inventoryList = new HashMap<>();
+        this.beds = new ArrayList<>();
+        this.foods = new ArrayList<>();
 
         try {
-            BasicDataSource dataSource = new BasicDataSource();
-            dataSource.setUrl("jdbc:postgresql://localhost:5432/Argos");
-            dataSource.setUsername("postgres");
-            dataSource.setPassword("postgres1");
+            // Connect to the database
+            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/Argos", "postgres", "postgres1");
 
-            Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement();
-
-            ResultSet resultSet = statement.executeQuery(
-                    "SELECT name, price FROM ProductInfo INNER JOIN ProductVariants ON ProductInfo.product_id = ProductVariants.product_id;"
-            );
-
-            while (resultSet.next()) {
-                String name = resultSet.getString("name");
-                Double price = resultSet.getDouble("price");
-                inventoryList.put(name, price);
+            // Fetch beds from the database
+            Statement bedStatement = connection.createStatement();
+            ResultSet bedResultSet = bedStatement.executeQuery("SELECT size_name, price FROM ProductVariants " +
+                    "INNER JOIN ProductInfo ON ProductVariants.product_id = ProductInfo.product_id " +
+                    "INNER JOIN ProductSize ON ProductVariants.size_id = ProductSize.size_id " +
+                    "WHERE ProductInfo.name = 'bed'");
+            while (bedResultSet.next()) {
+                String size = bedResultSet.getString("size_name");
+                double price = bedResultSet.getDouble("price");
+                beds.add(new Bed(size, price));
             }
+            bedResultSet.close();
+            bedStatement.close();
 
-            resultSet.close();
-            statement.close();
+            // Fetch foods from the database
+            Statement foodStatement = connection.createStatement();
+            ResultSet foodResultSet = foodStatement.executeQuery("SELECT size_name, blend, price FROM ProductVariants " +
+                    "INNER JOIN ProductInfo ON ProductVariants.product_id = ProductInfo.product_id " +
+                    "INNER JOIN ProductSize ON ProductVariants.size_id = ProductSize.size_id " +
+                    "WHERE ProductInfo.name = 'food'");
+            while (foodResultSet.next()) {
+                String size = foodResultSet.getString("size_name");
+                String blend = foodResultSet.getString("blend");
+                double price = foodResultSet.getDouble("price");
+                foods.add(new Food(size, blend, price));
+            }
+            foodResultSet.close();
+            foodStatement.close();
+
+            // Close the connection
             connection.close();
-            dataSource.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public Double getProductPrice(String productName) {
-        return inventoryList.get(productName);
+    public List<Bed> getBeds() {
+        return beds;
     }
 
-    public Map<String, Double> getProductsByCategory(String category) {
-        Map<String, Double> filteredProducts = new HashMap<>();
-        for (Map.Entry<String, Double> entry : inventoryList.entrySet()) {
-            if (entry.getKey().contains(category)) {
-                filteredProducts.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return filteredProducts;
+    public List<Food> getFoods() {
+        return foods;
     }
-
-
-
 }
