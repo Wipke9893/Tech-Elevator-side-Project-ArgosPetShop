@@ -32,4 +32,7 @@ public class Food {
     public void setPrice(double price) {
         this.price = price;
     }
+    public String toString() {
+        return size + " - " + blend + " - $" + price;
+    }
 }

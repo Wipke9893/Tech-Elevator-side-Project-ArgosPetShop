@@ -23,4 +23,10 @@ public class Bed {
     public void setPrice(double price) {
         this.price = price;
     }
+
+    // toString method
+    @Override
+    public String toString() {
+        return size + " - $" + price;
+    }
 }

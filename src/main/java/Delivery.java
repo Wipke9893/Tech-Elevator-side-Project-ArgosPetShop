@@ -19,10 +19,26 @@ public class Delivery {
         }
 
         if ("yes".equals(wantsDelivery)) {
-            // Your existing code for delivery
-            // ...
-            cart += deliveryCost;
+
             System.out.println("An additional $25 has been added to your total for delivery.");
+
+            System.out.println("Please provide the following details for delivery:");
+
+            input.nextLine();  // Consume the newline character left behind by input.next()
+
+            System.out.println("Enter your address: ");
+            String address = input.nextLine();
+
+            System.out.println("Enter your contact number: ");
+            String contact = input.nextLine();
+
+            System.out.println("Enter your preferred delivery time: ");
+            String time = input.nextLine();
+
+            System.out.println("Your items will be delivered to " + address + " at " + time + ".");
+            System.out.println("Our delivery person will contact you at " + contact + " before arrival.");
+
+            cart = cart + deliveryCost;
         } else {
             System.out.println("You have opted for in-store pickup.");
         }
