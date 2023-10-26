@@ -7,14 +7,45 @@ public class Methods {
             System.out.println((i + 1) + ". " + items.get(i).toString());
         }
     }
+    public static double addProductToCart(Scanner input, Inventory inventory, double cart) {
+        List<String> validCategories = Arrays.asList("bed", "toy", "food", "treat", "CBD", "supplement",
+                "waste bag", "shampoo", "conditioner", "brush",
+                "harness", "collar", "leash", "bowl", "crate",
+                "sweater", "winter coat", "flea and tick prevention");
 
+        while (true) { // Loop until a valid category is entered
+            System.out.println("Which type of product are you interested in?");
+            System.out.println("We have: beds, toys, foods, treats, CBD, supplements, waste bags, shampoos, conditioners, brushes");
+            System.out.println("harnesses, collars, leashes, bowls, crates, sweaters, winter coats, and flea and tick prevention");
+            System.out.print("Please enter a category: ");
+            String category = input.nextLine().toLowerCase();
+
+            // Map plural to singular
+            if (category.endsWith("s")) {
+                category = category.substring(0, category.length() - 1);
+            }
+            try {
+                if (!validCategories.contains(category)) {
+                    throw new IllegalArgumentException("Invalid category");
+                }
+                // If the category is valid, break the loop
+                if ("bed".equals(category)) {
+                    return addBedToCart(input, inventory, cart);
+                } else if ("food".equals(category)) {
+                    return addFoodToCart(input, inventory, cart);
+                }
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid category. Please enter a valid category.");
+            }
+        }
+    }
     public static int getUserChoice(Scanner input, int itemCount) {
-        int choice = -1;
+        int choice;
         while (true) {
             try {
                 System.out.print("Please enter the number of the item you would like to order: ");
                 choice = input.nextInt() - 1;
-                input.nextLine();  // consume the leftover newline character
+                input.nextLine();
 
                 if (choice < 0 || choice >= itemCount) {
                     System.out.println("Invalid choice. Please try again.");
@@ -23,14 +54,12 @@ public class Methods {
                 break;
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a valid number.");
-                input.nextLine();  // consume the invalid token
+                input.nextLine();
             }
         }
         return choice;
     }
 
-
-    // Step 4: Add selected items to the cart
     public static double addBedToCart(Scanner input, Inventory inventory, double cart) {
         List<Bed> beds = inventory.getBeds();
 
@@ -50,7 +79,6 @@ public class Methods {
 
         return cart;
     }
-
     public static double addFoodToCart(Scanner input, Inventory inventory, double cart) {
         List<Food> foods = inventory.getFoods();
 
@@ -66,12 +94,11 @@ public class Methods {
 
         return cart;
     }
-
-    public static boolean askForMoreItems(Scanner input) {
+    public static boolean askForMoreItems(Scanner input) { // bug here --------------------->
         String response;
         while (true) {
             System.out.print("Would you like to order anything else? (yes/no): ");
-            response = input.next().trim().toLowerCase();
+            response = input.nextLine().trim().toLowerCase();
             if ("yes".equals(response) || "no".equals(response)) {
                 break;  // Exit the loop if a valid answer is provided
             } else {
@@ -102,42 +129,9 @@ public class Methods {
             }
         }
     }
+
     public static double addToCart(double cart, double price, int quantity) {
         return cart + (price * quantity);
-    }
-
-    public static double addProductToCart(Scanner input, Inventory inventory, double cart) {
-        List<String> validCategories = Arrays.asList("bed", "toy", "food", "treat", "CBD", "supplement",
-                "waste bag", "shampoo", "conditioner", "brush",
-                "harness", "collar", "leash", "bowl", "crate",
-                "sweater", "winter coat", "flea and tick prevention");
-
-        while (true) { // Loop until a valid category is entered
-            System.out.println("Which type of product are you interested in?");
-            System.out.println("We have: beds, toys, foods, treats, CBD, supplements, waste bags, shampoos, conditioners, brushes");
-            System.out.println("harnesses, collars, leashes, bowls, crates, sweaters, winter coats, and flea and tick prevention");
-            System.out.print("Please enter a category: ");
-            String category = input.nextLine().toLowerCase();
-
-            // Map plural to singular
-            if (category.endsWith("s")) {
-                category = category.substring(0, category.length() - 1);
-            }
-            try {
-                if (!validCategories.contains(category)) {
-                    throw new IllegalArgumentException("Invalid category");
-                }
-                // If the category is valid, break the loop
-                if ("bed".equals(category)) {
-                    return addBedToCart(input, inventory, cart);
-                } else if ("food".equals(category)) {
-                    return addFoodToCart(input, inventory, cart);
-                } else {
-                }
-            } catch (IllegalArgumentException e) {
-                System.out.println("Invalid category. Please enter a valid category.");
-            }
-        }
     }
 
 
@@ -169,81 +163,3 @@ public class Methods {
         }
     }
 }
-
-//
-//    public static double addBedToCart(Scanner input, Inventory inventory, double cart) {
-//        List<Bed> beds = inventory.getBeds();
-//        System.out.println("Available beds sizes:");
-//        for (int i = 0; i < beds.size(); i++) {
-//            System.out.println((i + 1) + ". " + beds.get(i).getSize() + " - $" + beds.get(i).getPrice());
-//        }
-//
-//        System.out.println("Please specify your selected orders by number: ");
-//
-//        while (true) {
-//            try {
-//                String line = input.nextLine().replaceAll("[^0-9]", ""); // remove all non-numeric characters
-//                int choice = Integer.parseInt(line.split(" ")[0]); // get the first part and try to convert it to an integer
-//                Bed selectedBed = beds.get(choice - 1);
-//                int quantity = getQuantity(input);
-//                cart += selectedBed.getPrice() * quantity;
-//                System.out.println("You have added a " + selectedBed.getSize() + " bed to your cart.");
-//                break; // if successful, break the loop
-//            } catch (NumberFormatException | InputMismatchException e) {
-//                System.out.println("Invalid input. Please enter a valid number.");
-//            } catch (IndexOutOfBoundsException e) {
-//                System.out.println("Invalid choice. Please select a valid bed size.");
-//            }
-//        }
-//        return cart;
-//    }
-//
-//
-//
-//    public static double addFoodToCart(Scanner input, Inventory inventory, double cart) {
-//        List<Food> foods = inventory.getFoods();
-//        System.out.println("Available food sizes:");
-//        for (int i = 0; i < foods.size(); i++) {
-//            System.out.println((i + 1) + ". " + foods.get(i).getSize() + " - " + foods.get(i).getBlend() + " - $" + foods.get(i).getPrice());
-//        }
-//
-//        System.out.println("Please specify your selected orders by number: ");
-//
-//        while (true) {
-//            try {
-//                String line = input.nextLine().replaceAll("[^0-9]", ""); // remove all non-numeric characters
-//                int choice = Integer.parseInt(line.split(" ")[0]); // get the first part and try to convert it to an integer
-//                Food selectedFood = foods.get(choice - 1);
-//                int quantity = getQuantity(input);
-//                cart += selectedFood.getPrice() * quantity;
-//                System.out.println("You have added a " + selectedFood.getSize() + " " + selectedFood.getBlend() + " food to your cart.");
-//                break; // if successful, break the loop
-//            } catch (NumberFormatException | InputMismatchException e) {
-//                System.out.println("Invalid input. Please enter a valid number.");
-//            } catch (IndexOutOfBoundsException e) {
-//                System.out.println("Invalid choice. Please select a valid food size.");
-//            }
-//        }
-//        return cart;
-
-//    }
-//    public static int getQuantity(Scanner input) {
-//        while (true) {
-//            try {
-//                System.out.print("Please enter the quantity: ");
-//                int quantity = input.nextInt();
-//                input.nextLine();
-//                if (quantity <= 0) {
-//                    throw new IllegalArgumentException("Invalid quantity");
-//                }
-//                return quantity;
-//            } catch (InputMismatchException e) {
-//                System.out.println("Invalid input. Please enter a valid number.");
-//                input.nextLine();  // consume the invalid token
-//            } catch (IllegalArgumentException e) {
-//                System.out.println("Invalid quantity. Please enter a valid quantity.");
-//            }
-//        }
-
-//    }
-
